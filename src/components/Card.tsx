@@ -1,13 +1,15 @@
 import React from 'react'
+import {Answer} from '../App'
 
 type Props = {
     question:string;
     answers: string[];
-    callback:any;
-    userAnswer: boolean;
+    callback:(e:React.MouseEvent<HTMLButtonElement>) => void;
+    userAnswer: Answer | undefined;
     questionNumber: number;
     totalQuestions: number;
 }
+
 
 // Specify component to be functional
 
@@ -16,12 +18,12 @@ const Card: React.FC<Props> = ({question, answers, callback, userAnswer, questio
         <p className='number'>
             Qustion: {questionNumber}/{totalQuestions}
         </p>
-        Renders stuff from API that we don't 
+        {/* Renders stuff from API that we don't  */}
         <p dangerouslySetInnerHTML={{__html:question}}/>
         <div>
             {answers.map(answer =>(
-                <div>
-                    <button disabled={userAnswer} onClick={callback}>
+                <div key={answer}>
+                    <button disabled={!!userAnswer} value={answer} onClick={callback}>
                         <span dangerouslySetInnerHTML={{__html:answer}}></span>
                     </button>
                 </div>
