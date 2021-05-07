@@ -3,7 +3,7 @@ import './App.css';
 import Card from './components/Card'
 import {fetchQuestions} from './api'
 import {QuestionState, Difficulty} from './api'
-import {GlobalStyle} from './app.styles' 
+import {GlobalStyle, Home} from './app.styles' 
 
 export type Answer = {
   question:string;
@@ -16,22 +16,24 @@ export type Answer = {
 
   const[loading, setLoading] = useState(false)
   const[questions, setQuestions] = useState<QuestionState[]>([])
-  const[number, setNumber] = useState(10)
+  const[currentQuestion, setCurrentQuestion] = useState(10)
   const[userAnswers, setUserAnswers] = useState<Answer[]>([])
   const[score, setScore] = useState(0)
   const[gameOver, setGameOver] = useState(true)
 
   console.log(questions)
 
+  const total_Questions = 2
+
   const startQuiz = async () =>{
     setLoading(true);
     setGameOver(false);
 
-    const newQuestions = await fetchQuestions(10, Difficulty.EASY)
+    const newQuestions = await fetchQuestions(total_Questions, Difficulty.EASY)
     setQuestions(newQuestions);
     setScore(0)
     setUserAnswers([])
-    setNumber(0)
+    setCurrentQuestion(0)
     setLoading(false)
 }
 
@@ -40,15 +42,17 @@ export type Answer = {
       // Users answer
       const answer = e.currentTarget.value
       // Check answer agains correct answer
-      const correct = questions[number].correct_answer === answer
+      const correct = questions[currentQuestion].correct_answer === answer
       // Add score if answer is correct
-      if (correct) setScore(prev =>prev + 1)
+      if (correct) {
+        setScore(prev =>prev + 1)
+      }
       // Save answer in the array UserAnswers
       const answerObject = {
-        question: questions[number].question,
+        question: questions[currentQuestion].question,
         answer,
         correct,
-        correctAnswer: questions[number].correct_answer
+        correctAnswer: questions[currentQuestion].correct_answer
       }
       setUserAnswers((prev) =>[...prev, answerObject])
     }
@@ -56,46 +60,52 @@ export type Answer = {
 
   const nextQuestion =() =>{
   // Move to the next question if this one is not the last
-  const nextQuestion = number +1
+  const nextQuestion = currentQuestion +1
 
-  if (nextQuestion === 10) {
-    setGameOver(true)
+  if (nextQuestion < total_Questions) {
+    setCurrentQuestion(nextQuestion)
   }
   else{
-    setNumber(nextQuestion)
+    setGameOver(true)
   }
   }
 
   return (
     <>
     <GlobalStyle />
-    <div className="App">
-     <h1>Start Quiz</h1>
+    <Home>
+     <h1>Quiz</h1>
 
-     {gameOver || userAnswers.length=== 10 ? (
+     {gameOver || userAnswers.length=== total_Questions ? (
        <button className="btn__start" onClick={startQuiz}>Start Quiz</button>
      ) : null}
 
-     {!gameOver ?  <p className="score">Score:{score}</p> : null}
+     {!gameOver ?  <strong className="score">Score:{score}</strong> : null}
     
      {loading && <h4>Loading questions...</h4> }
 
      {!loading && !gameOver && 
       <Card 
-        questionNumber={number+1}
-        totalQuestions={10}
-        question={questions[number].question}
-        answers={questions[number].answers}
-        userAnswer={userAnswers ? userAnswers[number] : undefined}
+        questionNumber={currentQuestion+1}
+        totalQuestions={total_Questions}
+        question={questions[currentQuestion].question}
+        answers={questions[currentQuestion].answers}
+        userAnswer={userAnswers ? userAnswers[currentQuestion] : undefined}
         callback={verifyAnswer}
       />
      }
 
-     {!gameOver && !loading && userAnswers.length === number +1 && number !==9 ?
+     {!gameOver && !loading && userAnswers.length === currentQuestion +1 && currentQuestion !==total_Questions-1 ?
        <button className="btn__next" onClick={nextQuestion}>Next Question</button>
       : null
      }
-    </div>
+     {!gameOver && currentQuestion > total_Questions-1 &&
+      <div>
+        You scored {score} out of {questions.length}
+     </div>
+     
+     }
+    </Home>
     </>
   );
 }
