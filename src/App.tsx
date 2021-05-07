@@ -23,7 +23,7 @@ export type Answer = {
 
   console.log(questions)
 
-  const total_Questions = 2
+  const total_Questions = 5
 
   const startQuiz = async () =>{
     setLoading(true);

@@ -11,10 +11,6 @@ export const GlobalStyle = createGlobalStyle`
         background-size:cover;
         background-repeat:no-repeat;
         background-position:center;
-        
-        /* display:flex;
-        justify-content:center;
-        align-items:center; */
     }
     *{
         box-sizing:border-box;
@@ -53,7 +49,7 @@ export const Home = styled.div`
         border-radius:4px;
         transition:  transform 0.4s ease-in-out;
     }
-    .btn__start:hover{
+    .btn__next:hover, .btn__start:hover{
         outline:whitesmoke;
         transform:scale(1.07)
     }
